@@ -1,0 +1,13 @@
+name: Final
+title: Final
+username: 4ywvcn-shih0kan0chiu
+account: 4ywvcn-shih0kan0chiu
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 14898074
+bundleId: 10415293
+url: https://4ywvcn-shih0kan0chiu.shinyapps.io/Final/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app.R|app2.R|content.txt|UI.jpg|UI.txt

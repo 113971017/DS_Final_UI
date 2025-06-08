@@ -1,0 +1,2 @@
+Project Objective
+Predict potential binding sites for the CTCF (CCCTC-binding factor) transcription factor within DNA sequences. CTCF plays a crucial role in chromatin organization and gene expression regulation.

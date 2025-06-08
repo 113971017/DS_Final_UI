@@ -1,0 +1,23 @@
+
+Your a professional R programmer.
+You have 10 experience in UX,UI and R language.
+
+Now you need to implement a UI (deploy to shiny) for the follwing repo
+
+https://github.com/iiyyll01lin/ctcf-predictor/tree/202505-rc1?tab=readme-ov-file#project-objective 
+
+
+Here is the things you have to do.
+Programming Language is R. You have to provide full R code.
+UI layout like UI.jpg
+
+1. This UI is a apple web style.
+2. There are one title and four pages UI .user can switch the pages by click the name.
+   2.1 title is on left up cornter. 
+   2.2 Introduction page content is  content.txt.
+   2.3 NULL mode place a auc graphic. 
+
+3. add a new page "about us" after " Model Performance"
+   3.1 there are four members in our team
+   3.1.1 here are the members name :  yylin, Victor Chiang , Jason Chang , Thomas Chiu
+Write the R code for shiny. at the end of this programming. you have to run the app by code.
