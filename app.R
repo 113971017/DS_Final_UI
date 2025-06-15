@@ -7,6 +7,7 @@ library(ggplot2)
 library(shinycssloaders)
 library(shinyWidgets)
 library(htmltools)
+library(readr)
 
 # Define UI
 ui <- fluidPage(
@@ -227,6 +228,46 @@ ui <- fluidPage(
         font-weight: 600;
         color: #4caf50;
       }
+      
+      .quality-discovery {
+        background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 20px 0;
+        border: 2px solid #f57c00;
+        box-shadow: 0 8px 25px rgba(245, 124, 0, 0.15);
+      }
+      
+      .discovery-title {
+        color: #f57c00;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        text-align: center;
+      }
+      
+      .discovery-text {
+        color: #e65100;
+        font-size: 18px;
+        font-weight: 600;
+        text-align: center;
+        line-height: 1.6;
+      }
+      
+      .comprehensive-findings {
+        background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        border-radius: 12px;
+        padding: 25px;
+        margin: 20px 0;
+        border: 1px solid #2196f3;
+      }
+      
+      .findings-title {
+        color: #1976d2;
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 15px;
+      }
     "))
   ),
   
@@ -241,7 +282,7 @@ ui <- fluidPage(
           navbarPage("",
                      id = "main_tabs",
                      
-                     # Introduction Tab
+                     # Introduction Tab (content from content.txt with additional CTCF information)
                      tabPanel("Introduction",
                               div(class = "tab-content",
                                   div(class = "content-card",
@@ -252,7 +293,6 @@ ui <- fluidPage(
                                       h4("About CTCF", style = "color: #667eea; margin-top: 35px; margin-bottom: 20px; font-size: 20px;"),
                                       p("CCCTC-binding factor (CTCF) is a transcription regulator involved in many cellular processes including:",
                                         style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
-                                      
                                       tags$ul(
                                         tags$li("Chromatin organization and 3D genome structure", style = "margin-bottom: 8px;"),
                                         tags$li("Gene expression regulation", style = "margin-bottom: 8px;"),
@@ -262,9 +302,36 @@ ui <- fluidPage(
                                         style = "font-size: 16px; line-height: 1.8; color: #555; padding-left: 20px;"
                                       ),
                                       
+                                      # Additional CTCF information from COMPREHENSIVE_FINDINGS_REPORT.md
+                                      div(class = "comprehensive-findings",
+                                          h4("CTCF Binding Mechanism", class = "findings-title"),
+                                          p("CTCF recognizes specific DNA sequences through its zinc finger domains, with the core binding motif being highly conserved across species. The protein acts as an architectural transcription factor that:",
+                                            style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
+                                          tags$ul(
+                                            tags$li("Forms chromatin loops by binding to convergent CTCF sites", style = "margin-bottom: 8px;"),
+                                            tags$li("Blocks enhancer-promoter communication when acting as an insulator", style = "margin-bottom: 8px;"),
+                                            tags$li("Coordinates with cohesin complex for loop extrusion", style = "margin-bottom: 8px;"),
+                                            tags$li("Maintains topologically associating domains (TADs)", style = "margin-bottom: 8px;"),
+                                            style = "font-size: 16px; line-height: 1.6; color: #555; padding-left: 20px;"
+                                          )
+                                      ),
+                                      
                                       h4("How it works", style = "color: #667eea; margin-top: 35px; margin-bottom: 20px; font-size: 20px;"),
                                       p("This tool uses advanced machine learning algorithms to analyze DNA sequences and predict CTCF binding sites with high accuracy. The prediction is based on sequence motifs, chromatin features, and genomic context.",
-                                        style = "font-size: 16px; line-height: 1.7; color: #555;")
+                                        style = "font-size: 16px; line-height: 1.7; color: #555;"),
+                                      
+                                      div(class = "comprehensive-findings",
+                                          h4("Key Research Findings", class = "findings-title"),
+                                          p("Our comprehensive analysis has revealed critical insights into CTCF binding site prediction:",
+                                            style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
+                                          tags$ul(
+                                            tags$li("Quality-filtered datasets (1,000 sequences) outperform large unfiltered datasets (37,628 sequences) by 28x", style = "margin-bottom: 8px;"),
+                                            tags$li("Position Weight Matrices show dramatic improvement with high-quality training data", style = "margin-bottom: 8px;"),
+                                            tags$li("Statistical significance testing confirms the superiority of our enhanced PWM models", style = "margin-bottom: 8px;"),
+                                            tags$li("Consensus sequences reveal highly conserved core binding motifs", style = "margin-bottom: 8px;"),
+                                            style = "font-size: 16px; line-height: 1.6; color: #555; padding-left: 20px;"
+                                          )
+                                      )
                                   )
                               )
                      ),
@@ -273,59 +340,71 @@ ui <- fluidPage(
                      tabPanel("Raw Data",
                               div(class = "tab-content",
                                   div(class = "content-card",
-                                      h3("Human Genome Reference Data (hg38)", class = "section-title"),
-                                      
+                                      h3("Raw Data Analysis", class = "section-title"),
                                       div(class = "raw-data-info",
                                           h4("Dataset Overview", style = "color: #4caf50; margin-bottom: 20px; font-size: 20px;"),
-                                          p("This dataset contains the human genome reference sequence (hg38) used for CTCF binding site prediction.",
+                                          p("This dataset contains extracted sequences and human genome reference data used for CTCF binding site prediction.",
                                             style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 20px;"),
                                           
+                                          h5("Extracted Sequences (extracted_sequences.fasta)", style = "color: #4caf50; margin-bottom: 15px;"),
                                           div(
-                                            span("File: hg38.fa", class = "raw-data-stat"),
-                                            span("Sequences: 455", class = "raw-data-stat"),
-                                            span("Total Length: 3.2B bp", class = "raw-data-stat")
+                                            span("Sequences: 44,217", class = "raw-data-stat"),
+                                            span("Total Length: 8,003,778 bp", class = "raw-data-stat"),
+                                            span("Format: FASTA", class = "raw-data-stat")
+                                          ),
+                                          
+                                          h5("Human Genome Reference (hg38.fa)", style = "color: #4caf50; margin-bottom: 15px; margin-top: 25px;"),
+                                          div(
+                                            span("Chromosomes: 455", class = "raw-data-stat"),
+                                            span("Total Length: 3.2B bp", class = "raw-data-stat"),
+                                            span("Assembly: hg38", class = "raw-data-stat")
                                           )
                                       ),
                                       
-                                      br(),
-                                      
                                       fluidRow(
-                                        column(6,
+                                        column(4,
                                                div(class = "metric-card",
-                                                   div("455", class = "metric-value"),
-                                                   div("Total Sequences", class = "metric-label")
+                                                   div("44,217", class = "metric-value"),
+                                                   div("Extracted Sequences", class = "metric-label")
                                                )
                                         ),
-                                        column(6,
+                                        column(4,
                                                div(class = "metric-card",
-                                                   div("3.2B", class = "metric-value"),
-                                                   div("Base Pairs", class = "metric-label")
+                                                   div("8.0M", class = "metric-value"),
+                                                   div("Total Base Pairs", class = "metric-label")
+                                               )
+                                        ),
+                                        column(4,
+                                               div(class = "metric-card",
+                                                   div("455", class = "metric-value"),
+                                                   div("Reference Sequences", class = "metric-label")
                                                )
                                         )
                                       ),
                                       
                                       br(),
-                                      
                                       div(class = "content-card", style = "background: #f8f9ff;",
-                                          h5("Chromosome Information", style = "color: #667eea; margin-bottom: 20px; font-size: 18px;"),
-                                          p("The dataset includes all major chromosomes and random contigs:", style = "color: #666; margin-bottom: 15px;"),
+                                          h5("Sample Sequence Names", style = "color: #667eea; margin-bottom: 20px; font-size: 18px;"),
                                           div(style = "font-family: 'Courier New', monospace; background: #f0f0f0; padding: 15px; border-radius: 8px; font-size: 14px;",
-                                              "chr1, chr10, chr11, chr11_KI270721v1_random, chr12, ..."
+                                              "chr12:53676107-53676353", br(),
+                                              "chr17:37373596-37373838", br(),
+                                              "chr5:43105741-43105981", br(),
+                                              "chr19:40634550-40634789", br(),
+                                              "chr16:57649099-57649346"
                                           ),
                                           br(),
-                                          p("This comprehensive genomic dataset serves as the foundation for accurate CTCF binding site prediction across the entire human genome.",
+                                          p("These genomic coordinates represent high-quality CTCF binding regions extracted from the human genome for model training and validation.",
                                             style = "color: #666; font-size: 16px; line-height: 1.6;")
                                       )
                                   )
                               )
                      ),
                      
-                     # Model Performance Tab (redesigned with user interactions, PWM Comparison as default)
+                     # Model Performance Tab (redesigned with user interactions)
                      tabPanel("Model Performance",
                               div(class = "tab-content",
                                   div(class = "content-card",
                                       h3("Model Analysis Tools", class = "section-title"),
-                                      
                                       fluidRow(
                                         column(4,
                                                div(class = "interaction-card",
@@ -358,7 +437,6 @@ ui <- fluidPage(
                                         div(class = "content-card",
                                             h4("Enhanced PWM Comparison Analysis", style = "color: #667eea; margin-bottom: 20px;"),
                                             
-                                            # Summary metrics from enhanced_pwm_comparison_report.html
                                             fluidRow(
                                               column(3,
                                                      div(class = "metric-card",
@@ -389,7 +467,13 @@ ui <- fluidPage(
                                             br(),
                                             withSpinner(plotlyOutput("pwm_comparison_plot", height = "400px"), color = "#667eea"),
                                             br(),
-                                            withSpinner(DT::dataTableOutput("pwm_comparison_table"), color = "#667eea")
+                                            withSpinner(DT::dataTableOutput("pwm_comparison_table"), color = "#667eea"),
+                                            
+                                            # Quality-over-Quantity Discovery Section
+                                            div(class = "quality-discovery",
+                                                div(class = "discovery-title", "Quality-over-Quantity Paradigm CONFIRMED"),
+                                                div(class = "discovery-text", "Revolutionary Discovery: Small, high-quality datasets dramatically outperform large, unfiltered datasets.")
+                                            )
                                         )
                                       ),
                                       
@@ -398,7 +482,6 @@ ui <- fluidPage(
                                         div(class = "content-card",
                                             h4("PWM Comparison Report", style = "color: #667eea; margin-bottom: 20px;"),
                                             
-                                            # Summary from pwm_comparison_report.html
                                             fluidRow(
                                               column(4,
                                                      div(class = "metric-card",
@@ -432,7 +515,6 @@ ui <- fluidPage(
                                         div(class = "content-card",
                                             h4("Statistical Significance Report", style = "color: #667eea; margin-bottom: 20px;"),
                                             
-                                            # Summary from statistical_significance_report.html
                                             fluidRow(
                                               column(3,
                                                      div(class = "metric-card",
@@ -472,45 +554,44 @@ ui <- fluidPage(
                               )
                      ),
                      
-                     # About Us Tab
+                     # About Us Tab (updated with Chinese names as specified)
                      tabPanel("About Us",
                               div(class = "tab-content",
                                   div(class = "content-card",
                                       h3("About Our Team", class = "section-title"),
-                                      
                                       fluidRow(
                                         column(3,
                                                div(class = "team-member",
-                                                   div(class = "member-avatar", "YL"),
-                                                   h4("yylin", style = "color: #667eea; margin-bottom: 10px;"),
-                                                   p("Principal Investigator", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
+                                                   div(class = "member-avatar", "穎彥"),
+                                                   h4("林穎彥", style = "color: #667eea; margin-bottom: 10px;"),
+                                                   p("113971012", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Lead researcher specializing in computational biology and CTCF binding site prediction.",
                                                      style = "color: #666; font-size: 14px; line-height: 1.5;")
                                                )
                                         ),
                                         column(3,
                                                div(class = "team-member",
-                                                   div(class = "member-avatar", "VC"),
-                                                   h4("Victor Chiang", style = "color: #667eea; margin-bottom: 10px;"),
-                                                   p("Bioinformatics Specialist", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
+                                                   div(class = "member-avatar", "政寬"),
+                                                   h4("蔣政寬", style = "color: #667eea; margin-bottom: 10px;"),
+                                                   p("112971026", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Expert in machine learning applications for genomics and transcription factor analysis.",
                                                      style = "color: #666; font-size: 14px; line-height: 1.5;")
                                                )
                                         ),
                                         column(3,
                                                div(class = "team-member",
-                                                   div(class = "member-avatar", "JC"),
-                                                   h4("Jason Chang", style = "color: #667eea; margin-bottom: 10px;"),
-                                                   p("Data Scientist", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
+                                                   div(class = "member-avatar", "育瑋"),
+                                                   h4("張育瑋", style = "color: #667eea; margin-bottom: 10px;"),
+                                                   p("113971008", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Specializes in statistical modeling and algorithm development for biological sequence analysis.",
                                                      style = "color: #666; font-size: 14px; line-height: 1.5;")
                                                )
                                         ),
                                         column(3,
                                                div(class = "team-member",
-                                                   div(class = "member-avatar", "TC"),
-                                                   h4("Thomas Chiu", style = "color: #667eea; margin-bottom: 10px;"),
-                                                   p("Software Developer", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
+                                                   div(class = "member-avatar", "世凎"),
+                                                   h4("邱世凎", style = "color: #667eea; margin-bottom: 10px;"),
+                                                   p("113971012", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Full-stack developer responsible for web application development and user interface design.",
                                                      style = "color: #666; font-size: 14px; line-height: 1.5;")
                                                )
@@ -518,7 +599,6 @@ ui <- fluidPage(
                                       ),
                                       
                                       br(),
-                                      
                                       div(class = "content-card", style = "background: linear-gradient(135deg, #f8f9ff 0%, #e8f0ff 100%);",
                                           h4("Our Mission", style = "color: #667eea; margin-bottom: 20px; font-size: 20px;"),
                                           p("We are dedicated to advancing genomics research through innovative computational tools. Our CTCF Predictor represents years of research in understanding chromatin organization and gene regulation mechanisms.",
@@ -535,13 +615,10 @@ ui <- fluidPage(
                                       ),
                                       
                                       br(),
-                                      
                                       div(style = "text-align: center; padding: 30px;",
                                           h4("Contact Information", style = "color: #667eea; margin-bottom: 20px;"),
-                                          p("Email: ctcf-predictor@genomics-lab.org", style = "font-size: 16px; color: #666; margin-bottom: 10px;"),
                                           p("GitHub: https://github.com/iiyyll01lin/ctcf-predictor", style = "font-size: 16px; color: #666; margin-bottom: 10px;"),
-                                          p("Lab Website: www.genomics-lab.org", style = "font-size: 16px; color: #666;")
-                                      )
+                                         )
                                   )
                               )
                      )
@@ -556,9 +633,9 @@ server <- function(input, output, session) {
   # PWM Comparison Plot (based on enhanced_pwm_comparison_report.html)
   output$pwm_comparison_plot <- renderPlotly({
     # Data from the HTML report - top 10 PWMs
-    pwm_names <- c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds", 
+    pwm_names <- c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds",
                    "best_pwm.rds", "subset_pwm_all_sizes.rds_size_2000", "subset_pwm_size2000.rds",
-                   "test_subset_pwm_all_sizes.rds_size_2000", "subset_pwm_all_sizes.rds_size_5000", 
+                   "test_subset_pwm_all_sizes.rds_size_2000", "subset_pwm_all_sizes.rds_size_5000",
                    "test_subset_pwm_all_sizes.rds_size_5000", "subset_pwm_size5000.rds")
     total_info <- c(20.519, 19.592, 19.592, 15.565, 12.564, 12.564, 11.749, 10.659, 9.837, 10.659)
     avg_info <- c(0.126, 0.083, 0.083, 0.066, 0.053, 0.053, 0.050, 0.045, 0.042, 0.045)
@@ -592,11 +669,11 @@ server <- function(input, output, session) {
   
   # PWM Comparison Table
   output$pwm_comparison_table <- DT::renderDataTable({
-    # Sample data from enhanced_pwm_comparison_report.html - top 10
+    # Sample data from enhanced_pwm_comparison_report.html - top 5
     pwm_data <- data.frame(
-      PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds", 
+      PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds",
                    "best_pwm.rds", "subset_pwm_all_sizes.rds_size_2000"),
-      Method = c("unknown", "high_quality_subset", "high_quality_subset", 
+      Method = c("unknown", "high_quality_subset", "high_quality_subset",
                  "high_quality_subset", "high_quality_subset"),
       Positions = c(163, 237, 237, 237, 237),
       Total_Info = c(20.519, 19.592, 19.592, 15.565, 12.564),
@@ -634,8 +711,7 @@ server <- function(input, output, session) {
     pwm_data$Frequency <- sapply(1:nrow(pwm_data), function(i) {
       pos <- pwm_data$Position[i]
       nuc <- pwm_data$Nucleotide[i]
-      
-      if (pos >= 8 && pos <= 12) {  # Core binding region
+      if (pos >= 8 && pos <= 12) { # Core binding region
         if (nuc %in% c("C", "G")) {
           runif(1, 0.6, 0.9)
         } else {
@@ -666,7 +742,7 @@ server <- function(input, output, session) {
   output$enhanced_pwm_table <- DT::renderDataTable({
     # Data from pwm_comparison_report.html - top 5
     enhanced_data <- data.frame(
-      PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "best_pwm.rds", 
+      PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "best_pwm.rds",
                    "subset_pwm_all_sizes.rds_size_2000", "subset_pwm_all_sizes.rds_size_5000"),
       Method = c("unknown", "high_quality_subset", "high_quality_subset", "high_quality_subset", "high_quality_subset"),
       Positions = c(163, 237, 237, 237, 237),
@@ -696,7 +772,7 @@ server <- function(input, output, session) {
   # Statistical Plot (based on statistical_significance_report.html)
   output$statistical_plot <- renderPlotly({
     # Data from statistical significance report
-    pwm_names <- c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds", 
+    pwm_names <- c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds",
                    "pwm_aligned.rds", "robust_pwm.rds")
     total_info <- c(15.565, 0.695, 7.481, 20.519, 2.175)
     effect_sizes <- c(7844.21, 330.2, 3759.38, 10347.14, 1078.16)
@@ -734,7 +810,7 @@ server <- function(input, output, session) {
   output$statistical_table <- DT::renderDataTable({
     # Data from statistical_significance_report.html
     stats_data <- data.frame(
-      PWM_Name = c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds", 
+      PWM_Name = c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds",
                    "pwm_aligned.rds", "robust_pwm.rds"),
       Total_Info = c(15.565, 0.695, 7.481, 20.519, 2.175),
       Conserved_Pos = c(2, 0, 0, 0, 0),
@@ -767,7 +843,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       stats_data <- data.frame(
-        PWM_Name = c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds", 
+        PWM_Name = c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds",
                      "pwm_aligned.rds", "robust_pwm.rds"),
         Total_Info = c(15.565, 0.695, 7.481, 20.519, 2.175),
         Conserved_Pos = c(2, 0, 0, 0, 0),
@@ -776,6 +852,7 @@ server <- function(input, output, session) {
         P_Value_Shuffled = c("p = 0.010", "p = 0.010", "p = 0.010", "p = 0.010", "p = 0.010"),
         Effect_Size = c("very large", "very large", "very large", "very large", "very large")
       )
+      
       write.csv(stats_data, file, row.names = FALSE)
     }
   )
