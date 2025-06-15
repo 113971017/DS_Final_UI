@@ -159,6 +159,7 @@ ui <- fluidPage(
         color: white;
         font-size: 24px;
         font-weight: 600;
+        overflow: hidden;
       }
       
       .interaction-card {
@@ -268,6 +269,17 @@ ui <- fluidPage(
         font-weight: 600;
         margin-bottom: 15px;
       }
+      
+      a {
+        color: #667eea;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      a:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
     "))
   ),
   
@@ -282,7 +294,7 @@ ui <- fluidPage(
           navbarPage("",
                      id = "main_tabs",
                      
-                     # Introduction Tab (content from content.txt with additional CTCF information)
+                     # Introduction Tab
                      tabPanel("Introduction",
                               div(class = "tab-content",
                                   div(class = "content-card",
@@ -293,6 +305,7 @@ ui <- fluidPage(
                                       h4("About CTCF", style = "color: #667eea; margin-top: 35px; margin-bottom: 20px; font-size: 20px;"),
                                       p("CCCTC-binding factor (CTCF) is a transcription regulator involved in many cellular processes including:",
                                         style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
+                                      
                                       tags$ul(
                                         tags$li("Chromatin organization and 3D genome structure", style = "margin-bottom: 8px;"),
                                         tags$li("Gene expression regulation", style = "margin-bottom: 8px;"),
@@ -302,11 +315,11 @@ ui <- fluidPage(
                                         style = "font-size: 16px; line-height: 1.8; color: #555; padding-left: 20px;"
                                       ),
                                       
-                                      # Additional CTCF information from COMPREHENSIVE_FINDINGS_REPORT.md
                                       div(class = "comprehensive-findings",
                                           h4("CTCF Binding Mechanism", class = "findings-title"),
                                           p("CTCF recognizes specific DNA sequences through its zinc finger domains, with the core binding motif being highly conserved across species. The protein acts as an architectural transcription factor that:",
                                             style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
+                                          
                                           tags$ul(
                                             tags$li("Forms chromatin loops by binding to convergent CTCF sites", style = "margin-bottom: 8px;"),
                                             tags$li("Blocks enhancer-promoter communication when acting as an insulator", style = "margin-bottom: 8px;"),
@@ -324,6 +337,7 @@ ui <- fluidPage(
                                           h4("Key Research Findings", class = "findings-title"),
                                           p("Our comprehensive analysis has revealed critical insights into CTCF binding site prediction:",
                                             style = "font-size: 16px; line-height: 1.7; color: #555; margin-bottom: 15px;"),
+                                          
                                           tags$ul(
                                             tags$li("Quality-filtered datasets (1,000 sequences) outperform large unfiltered datasets (37,628 sequences) by 28x", style = "margin-bottom: 8px;"),
                                             tags$li("Position Weight Matrices show dramatic improvement with high-quality training data", style = "margin-bottom: 8px;"),
@@ -336,11 +350,12 @@ ui <- fluidPage(
                               )
                      ),
                      
-                     # Raw Data Tab (content from rawdata.txt)
+                     # Raw Data Tab
                      tabPanel("Raw Data",
                               div(class = "tab-content",
                                   div(class = "content-card",
                                       h3("Raw Data Analysis", class = "section-title"),
+                                      
                                       div(class = "raw-data-info",
                                           h4("Dataset Overview", style = "color: #4caf50; margin-bottom: 20px; font-size: 20px;"),
                                           p("This dataset contains extracted sequences and human genome reference data used for CTCF binding site prediction.",
@@ -400,11 +415,12 @@ ui <- fluidPage(
                               )
                      ),
                      
-                     # Model Performance Tab (redesigned with user interactions)
+                     # Model Performance Tab
                      tabPanel("Model Performance",
                               div(class = "tab-content",
                                   div(class = "content-card",
                                       h3("Model Analysis Tools", class = "section-title"),
+                                      
                                       fluidRow(
                                         column(4,
                                                div(class = "interaction-card",
@@ -431,7 +447,7 @@ ui <- fluidPage(
                                       
                                       br(),
                                       
-                                      # PWM Comparison as default (always shown when no other selection)
+                                      # PWM Comparison as default
                                       conditionalPanel(
                                         condition = "!input.selected_analysis || input.selected_analysis == 'pwm_comparison'",
                                         div(class = "content-card",
@@ -469,7 +485,6 @@ ui <- fluidPage(
                                             br(),
                                             withSpinner(DT::dataTableOutput("pwm_comparison_table"), color = "#667eea"),
                                             
-                                            # Quality-over-Quantity Discovery Section
                                             div(class = "quality-discovery",
                                                 div(class = "discovery-title", "Quality-over-Quantity Paradigm CONFIRMED"),
                                                 div(class = "discovery-text", "Revolutionary Discovery: Small, high-quality datasets dramatically outperform large, unfiltered datasets.")
@@ -554,15 +569,18 @@ ui <- fluidPage(
                               )
                      ),
                      
-                     # About Us Tab (updated with Chinese names as specified)
+                     # About Us Tab
                      tabPanel("About Us",
                               div(class = "tab-content",
                                   div(class = "content-card",
                                       h3("About Our Team", class = "section-title"),
+                                      
                                       fluidRow(
                                         column(3,
                                                div(class = "team-member",
-                                                   div(class = "member-avatar", "穎彥"),
+                                                   div(class = "member-avatar",
+                                                       img(src = "Lin-Ying-Yan.jpg", alt = "林穎彥", style = "width: 100%; height: 100%; border-radius: 50%; object-fit: cover;")
+                                                   ),
                                                    h4("林穎彥", style = "color: #667eea; margin-bottom: 10px;"),
                                                    p("113971012", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Lead researcher specializing in computational biology and CTCF binding site prediction.",
@@ -591,7 +609,7 @@ ui <- fluidPage(
                                                div(class = "team-member",
                                                    div(class = "member-avatar", "世凎"),
                                                    h4("邱世凎", style = "color: #667eea; margin-bottom: 10px;"),
-                                                   p("113971012", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
+                                                   p("113971017", style = "color: #888; font-weight: 500; margin-bottom: 10px;"),
                                                    p("Full-stack developer responsible for web application development and user interface design.",
                                                      style = "color: #666; font-size: 14px; line-height: 1.5;")
                                                )
@@ -617,8 +635,16 @@ ui <- fluidPage(
                                       br(),
                                       div(style = "text-align: center; padding: 30px;",
                                           h4("Contact Information", style = "color: #667eea; margin-bottom: 20px;"),
-                                          p("GitHub: https://github.com/iiyyll01lin/ctcf-predictor", style = "font-size: 16px; color: #666; margin-bottom: 10px;"),
-                                         )
+                                          p(
+                                            "GitHub: ", 
+                                            tags$a(
+                                              href = "https://github.com/1132-NCCU-DataScience-inservice/finalprojectnew-group_1_new",
+                                              target = "_blank",
+                                              "https://github.com/1132-NCCU-DataScience-inservice/finalprojectnew-group_1_new"
+                                            ),
+                                            style = "font-size: 16px; color: #666; margin-bottom: 10px;"
+                                          )
+                                      )
                                   )
                               )
                      )
@@ -630,13 +656,13 @@ ui <- fluidPage(
 # Define Server
 server <- function(input, output, session) {
   
-  # PWM Comparison Plot (based on enhanced_pwm_comparison_report.html)
+  # PWM Comparison Plot
   output$pwm_comparison_plot <- renderPlotly({
-    # Data from the HTML report - top 10 PWMs
     pwm_names <- c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds",
                    "best_pwm.rds", "subset_pwm_all_sizes.rds_size_2000", "subset_pwm_size2000.rds",
                    "test_subset_pwm_all_sizes.rds_size_2000", "subset_pwm_all_sizes.rds_size_5000",
                    "test_subset_pwm_all_sizes.rds_size_5000", "subset_pwm_size5000.rds")
+    
     total_info <- c(20.519, 19.592, 19.592, 15.565, 12.564, 12.564, 11.749, 10.659, 9.837, 10.659)
     avg_info <- c(0.126, 0.083, 0.083, 0.066, 0.053, 0.053, 0.050, 0.045, 0.042, 0.045)
     conserved_pos <- c(0, 2, 2, 2, 1, 1, 0, 0, 1, 0)
@@ -669,7 +695,6 @@ server <- function(input, output, session) {
   
   # PWM Comparison Table
   output$pwm_comparison_table <- DT::renderDataTable({
-    # Sample data from enhanced_pwm_comparison_report.html - top 5
     pwm_data <- data.frame(
       PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "subset_pwm_size1000.rds",
                    "best_pwm.rds", "subset_pwm_all_sizes.rds_size_2000"),
@@ -697,21 +722,18 @@ server <- function(input, output, session) {
       )
   })
   
-  # Enhanced PWM Plot (based on pwm_comparison_report.html)
+  # Enhanced PWM Plot
   output$enhanced_pwm_plot <- renderPlot({
-    # Sample enhanced PWM heatmap based on consensus sequences
     set.seed(789)
     nucleotides <- c("A", "T", "G", "C")
     positions <- 1:20
     
-    # Create realistic PWM data based on CTCF motif
     pwm_data <- expand.grid(Position = positions, Nucleotide = nucleotides)
     
-    # Simulate CTCF-like pattern with higher C/G content in core positions
     pwm_data$Frequency <- sapply(1:nrow(pwm_data), function(i) {
       pos <- pwm_data$Position[i]
       nuc <- pwm_data$Nucleotide[i]
-      if (pos >= 8 && pos <= 12) { # Core binding region
+      if (pos >= 8 && pos <= 12) {
         if (nuc %in% c("C", "G")) {
           runif(1, 0.6, 0.9)
         } else {
@@ -740,7 +762,6 @@ server <- function(input, output, session) {
   
   # Enhanced PWM Table
   output$enhanced_pwm_table <- DT::renderDataTable({
-    # Data from pwm_comparison_report.html - top 5
     enhanced_data <- data.frame(
       PWM_Name = c("pwm_aligned.rds", "subset_pwm_all_sizes.rds_size_1000", "best_pwm.rds",
                    "subset_pwm_all_sizes.rds_size_2000", "subset_pwm_all_sizes.rds_size_5000"),
@@ -769,9 +790,8 @@ server <- function(input, output, session) {
       )
   })
   
-  # Statistical Plot (based on statistical_significance_report.html)
+  # Statistical Plot
   output$statistical_plot <- renderPlotly({
-    # Data from statistical significance report
     pwm_names <- c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds",
                    "pwm_aligned.rds", "robust_pwm.rds")
     total_info <- c(15.565, 0.695, 7.481, 20.519, 2.175)
@@ -808,7 +828,6 @@ server <- function(input, output, session) {
   
   # Statistical Table
   output$statistical_table <- DT::renderDataTable({
-    # Data from statistical_significance_report.html
     stats_data <- data.frame(
       PWM_Name = c("best_pwm.rds", "efficient_aligned_pwm.rds", "generated_pwm.rds",
                    "pwm_aligned.rds", "robust_pwm.rds"),
